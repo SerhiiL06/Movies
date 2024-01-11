@@ -1,5 +1,5 @@
-from passlib.context import CryptContext
 from fastapi import HTTPException, status
+from passlib.context import CryptContext
 
 
 class PasswordService:

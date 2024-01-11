@@ -1,6 +1,7 @@
 from fastapi import FastAPI
-from presentation.endpoints.users import user_router
+
 from presentation.endpoints.admin.main import admin_router
+from presentation.endpoints.users import user_router
 
 app = FastAPI()
 

@@ -3,4 +3,6 @@
 Pipfile
 Pipfile.lock
 
+node_modules
+frontend/
 __pycache__/

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from .users import get_user_list, get_user_detail, get_user_movies
 
+from .users import get_user_detail, get_user_list, get_user_movies
 
 admin_router = APIRouter(prefix="/admin", tags=["admin"])
 

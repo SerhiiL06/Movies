@@ -1,19 +1,20 @@
 from typing import Any
-from pydantic import BaseModel, ConfigDict, Field, field_validator, validate_email
+
+from pydantic import BaseModel, ConfigDict, field_validator, EmailStr
 
 
 class UserCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    email: str
+    email: EmailStr
     username: str
     password1: str
     password2: str
 
-    @field_validator("email", "username")
+    @field_validator("username")
     @classmethod
-    def validate_email(cls, value):
-        return value.upper()
+    def validate_unique(cls, value):
+        return value.lower()
 
     @field_validator("password1", "password2")
     @classmethod

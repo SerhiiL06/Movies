@@ -1,8 +1,8 @@
-from fastapi import APIRouter
-from service.users.user_service import UserService
-from ..schemes.users.user_schemes import UserCreate
-from fastapi import Depends
+from fastapi import APIRouter, Depends
 
+from service.users.user_service import UserService
+
+from ..schemes.users.user_schemes import UserCreate
 
 user_router = APIRouter()
 
@@ -16,6 +16,11 @@ async def register(user_data: UserCreate, service: UserService = Depends()):
         password2=user_data.password2,
     )
     return res
+
+
+@user_router.get("/email-verification/{token}", tags=["Auth"])
+async def verify_email(token: str, service: UserService = Depends()):
+    return await service.check_email(token)
 
 
 @user_router.post("/login", tags=["Auth"])
