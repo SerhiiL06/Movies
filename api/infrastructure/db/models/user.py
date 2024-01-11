@@ -10,6 +10,7 @@ class User(Base):
 
     id: Mapped[UUID] = mapped_column(unique=True, primary_key=True)
     email: Mapped[str] = mapped_column(unique=True)
+    username: Mapped[str] = mapped_column(unique=True)
     hashed_password: Mapped[str]
 
     birthday: Mapped[datetime] = mapped_column(nullable=True)

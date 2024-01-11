@@ -1,6 +1,6 @@
 from logging.config import fileConfig
 
-from infrastructure.db.config import DatabaseCORE
+from infrastructure.db.config import settings
 
 from infrastructure.db.models.user import User
 from infrastructure.db.models.base import Base
@@ -16,10 +16,10 @@ config = context.config
 
 section = config.config_ini_section
 
-config.set_section_option(section, "DB_USERNAME", DatabaseCORE.DB_USERNAME)
-config.set_section_option(section, "DB_PASSWORD", DatabaseCORE.DB_PASSWORD)
-config.set_section_option(section, "DB_HOST", DatabaseCORE.DB_HOST)
-config.set_section_option(section, "DB_PORT", DatabaseCORE.DB_PORT)
+config.set_section_option(section, "DB_USERNAME", settings.DB_USERNAME)
+config.set_section_option(section, "DB_PASSWORD", settings.DB_PASSWORD)
+config.set_section_option(section, "DB_HOST", settings.DB_HOST)
+config.set_section_option(section, "DB_PORT", settings.DB_PORT)
 config.set_section_option(section, "DB_NAME", "favorite_movies")
 
 # Interpret the config file for Python logging.

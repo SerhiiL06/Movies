@@ -1,12 +1,21 @@
 from fastapi import APIRouter
+from service.users.user_service import UserService
+from ..schemes.users.user_schemes import UserCreate
+from fastapi import Depends
 
 
 user_router = APIRouter()
 
 
 @user_router.post("/register", tags=["Auth"])
-async def register():
-    pass
+async def register(user_data: UserCreate, service: UserService = Depends()):
+    res = await service.register_user(
+        username=user_data.username,
+        email=user_data.email,
+        password1=user_data.password1,
+        password2=user_data.password2,
+    )
+    return res
 
 
 @user_router.post("/login", tags=["Auth"])
