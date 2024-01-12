@@ -1,13 +1,15 @@
-from fastapi import APIRouter, Depends
 from typing import Annotated
 
-from service.users.user_service import UserService
+from fastapi import APIRouter, Depends, Query
+from fastapi.security.oauth2 import OAuth2PasswordRequestForm
+from pydantic import EmailStr
 
 from service.users.auth import current_user
+from service.users.user_service import UserService
 
-from ..schemes.users.user_schemes import UserCreate, UserProfile, UpdateUser
-from ..schemes.users.password_schemes import ChangePasswordScheme
-from fastapi.security.oauth2 import OAuth2PasswordRequestForm
+from ..schemes.users.password_schemes import (ChangePasswordScheme,
+                                              ChangePasswordWithCode)
+from ..schemes.users.user_schemes import UpdateUser, UserCreate, UserProfile
 
 user_router = APIRouter(prefix="/users")
 
@@ -79,5 +81,14 @@ async def change_password(
 
 
 @user_router.post("/forgot-password", tags=["Password"])
-async def forgot_password():
-    pass
+async def forgot_password(
+    service: Annotated[UserService, Depends()], email: EmailStr = Query()
+):
+    return await service.forgot_password(email)
+
+
+@user_router.post("/set-password-via-code", tags=["Password"])
+async def set_password(
+    data: ChangePasswordWithCode, service: Annotated[UserService, Depends()]
+):
+    return await service.set_password_with_code(data)

@@ -1,16 +1,16 @@
+import codecs
 from uuid import uuid4
 
-from fastapi import HTTPException, Depends
-from sqlalchemy import update, select
+from fastapi import HTTPException
+from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 
 from infrastructure.db.models.user import User
+from infrastructure.db.redis import RedisTools
 from infrastructure.main import async_session
 from service.email.email_service import EmailService
 from service.token.jwt_service import JWTServive
 
-from .password import PasswordService
-from typing import Annotated
 from .password import PasswordService
 
 
@@ -118,14 +118,18 @@ class UserService:
         self,
         data,
         email,
+        with_code=False,
         session=async_session(),
     ):
         self.password.compare_password(data.password1, data.password2)
         async with session as sess:
             instance = await self.get_me(email)
-            self.password.check_password(data.password1, instance.hashed_password)
 
-            new = self.password.hashed_password(data.new_password)
+            if not with_code:
+                self.password.check_password(data.password1, instance.hashed_password)
+
+            to_change = data.password1 if with_code else data.new_password
+            new = self.password.hashed_password(to_change)
 
             query = (
                 update(User)
@@ -136,3 +140,35 @@ class UserService:
             await sess.execute(query)
 
             await sess.commit()
+
+    async def forgot_password(self, email):
+        instance = await self.get_me(email)
+        if instance is None:
+            raise HTTPException(
+                status_code=400,
+                detail={"code": "400", "message": "user with this email doesnt exists"},
+            )
+
+        code = await self.email.send_confirm_code(email)
+
+        redis = RedisTools()
+        await redis.set_value(code, email)
+
+        return {"code": "200", "message": "email was sent"}
+
+    async def set_password_with_code(self, data):
+        redis = RedisTools()
+
+        email = await redis.get_value(data.code)
+
+        if email is None:
+            raise HTTPException(
+                status_code=400,
+                detail={"code": "404", "message": "invalid or expired code. Try again"},
+            )
+
+        await self.change_password(
+            data, codecs.decode(email, encoding="utf-8"), with_code=True
+        )
+
+        await redis.del_value(data.code)

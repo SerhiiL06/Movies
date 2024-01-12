@@ -1,7 +1,8 @@
-from pydantic import BaseModel
-from pydantic.functional_validators import AfterValidator
 import re
 from typing import Annotated
+
+from pydantic import BaseModel
+from pydantic.functional_validators import AfterValidator
 
 
 def validate_password(value):
@@ -25,3 +26,9 @@ class ChangePasswordScheme(BaseModel):
     password2: str
 
     new_password: pws_validator
+
+
+class ChangePasswordWithCode(BaseModel):
+    code: str
+    password1: pws_validator
+    password2: pws_validator

@@ -12,8 +12,6 @@ class PasswordService:
         return self.password.hash(pswd)
 
     def check_password(self, secret, pswd) -> bool:
-        print(secret)
-        print(pswd)
         verify = self.password.verify(secret, pswd)
 
         if not verify:

@@ -1,10 +1,11 @@
-from ..token.jwt_service import JWTServive
 from typing import Annotated
-from .user_service import UserService
-from fastapi import Depends
-from jose import JWTError
-from fastapi.security import OAuth2PasswordBearer
 
+from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError
+
+from ..token.jwt_service import JWTServive
+from .user_service import UserService
 
 bearer = OAuth2PasswordBearer(tokenUrl="users/token")
 

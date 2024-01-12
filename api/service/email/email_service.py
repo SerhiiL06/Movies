@@ -1,3 +1,5 @@
+from random import randint
+
 from fastapi_mail import FastMail, MessageSchema
 
 from infrastructure.db.config import email_settings
@@ -22,3 +24,18 @@ class EmailService:
         )
 
         await self.mail.send_message(message)
+
+    async def send_confirm_code(self, email):
+        code = randint(100_000, 999_999)
+        body = f"""<p>There is your confirm code {code}</p>"""
+
+        message = MessageSchema(
+            recipients=[email],
+            subject="Confirm code for change password",
+            body=body,
+            subtype="html",
+        )
+
+        await self.mail.send_message(message)
+
+        return code
