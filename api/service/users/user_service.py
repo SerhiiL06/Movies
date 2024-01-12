@@ -1,13 +1,15 @@
 from uuid import uuid4
 
 from fastapi import HTTPException
-from sqlalchemy import update
+from sqlalchemy import update, select
 from sqlalchemy.exc import IntegrityError
 
 from infrastructure.db.models.user import User
 from infrastructure.main import async_session
 from service.email.email_service import EmailService
 from service.token.jwt_service import JWTServive
+
+from .password import PasswordService
 
 from .password import PasswordService
 
@@ -34,6 +36,7 @@ class UserService:
                     username=username,
                     email=email,
                     hashed_password=hash_password,
+                    role="default",
                 )
 
                 sess.add(user)
@@ -60,3 +63,30 @@ class UserService:
             await sess.commit()
 
             return {"code": "200", "message": "success verify"}
+
+    async def get_me(self, email, session=async_session()):
+        async with session as sess:
+            res = await sess.execute(select(User).where(User.email == email))
+            user_instance = res.scalar()
+
+            return {"email": user_instance.email, "role": user_instance.role}
+
+    async def check_user(self, email, password, session=async_session()):
+        async with session as sess:
+            res = await sess.execute(select(User).where(User.email == email))
+            user_instance = res.scalar()
+
+            error_pack = []
+
+            if user_instance is None:
+                error_pack.append(
+                    {"code": "404", "message": "email or password was wrong"}
+                )
+
+            if user_instance and user_instance.is_active == False:
+                error_pack.append({"code": "403", "message": "verify your profile"})
+
+            if error_pack:
+                raise HTTPException(status_code=400, detail=error_pack)
+
+            self.password.check_password(password, user_instance.hashed_password)

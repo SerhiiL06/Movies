@@ -1,10 +1,13 @@
 from fastapi import APIRouter, Depends
+from typing import Annotated
 
 from service.users.user_service import UserService
+from service.users.auth import AuthService, current_user
 
 from ..schemes.users.user_schemes import UserCreate
+from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 
-user_router = APIRouter()
+user_router = APIRouter(prefix="/users")
 
 
 @user_router.post("/register", tags=["Auth"])
@@ -19,7 +22,7 @@ async def register(user_data: UserCreate, service: UserService = Depends()):
 
 
 @user_router.get("/email-verification/{token}", tags=["Auth"])
-async def verify_email(token: str, service: UserService = Depends()):
+async def verify_email(token: str, service: Annotated[UserService, Depends()]):
     return await service.check_email(token)
 
 
@@ -29,13 +32,16 @@ async def login():
 
 
 @user_router.post("/token", tags=["Auth"])
-async def token():
-    pass
+async def take_token(
+    data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    service: Annotated[AuthService, Depends()],
+):
+    return await service.generate_auth_token(data.username, data.password)
 
 
 @user_router.get("/me", tags=["Profile"])
-async def get_profile():
-    pass
+async def get_profile(user: current_user, service: Annotated[UserService, Depends()]):
+    return await service.get_me(user.get("email"))
 
 
 @user_router.put("/me", tags=["Profile"])

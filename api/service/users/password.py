@@ -12,7 +12,10 @@ class PasswordService:
         return self.password.hash(pswd)
 
     def check_password(self, secret, pswd) -> bool:
-        return self.password.verify(secret, pswd)
+        verify = self.password.verify(secret, pswd)
+
+        if not verify:
+            raise HTTPException(status_code=403, detail="email or password was wrong")
 
     @staticmethod
     def compare_password(first, second) -> None:
