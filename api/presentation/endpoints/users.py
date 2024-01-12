@@ -2,10 +2,11 @@ from fastapi import APIRouter, Depends
 from typing import Annotated
 
 from service.users.user_service import UserService
-from service.token.jwt_service import JWTServive
+
 from service.users.auth import current_user
 
 from ..schemes.users.user_schemes import UserCreate, UserProfile, UpdateUser
+from ..schemes.users.password_schemes import ChangePasswordScheme
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 
 user_router = APIRouter(prefix="/users")
@@ -42,7 +43,7 @@ async def take_token(
     response_model=UserProfile,
 )
 async def get_profile(user: current_user, service: Annotated[UserService, Depends()]):
-    return await service.get_me(user.get("user_id"))
+    return await service.get_me(user.get("email"))
 
 
 @user_router.put(
@@ -62,13 +63,19 @@ async def update_profile(
 
 
 @user_router.delete("/delete-profile", tags=["Profile"])
-async def delete_profile():
-    pass
+async def delete_profile(
+    user: current_user, service: Annotated[UserService, Depends()]
+):
+    return await service.delete_user(user.get("user_id"))
 
 
 @user_router.post("/change-password", tags=["Password"])
-async def change_password():
-    pass
+async def change_password(
+    user: current_user,
+    password_data: ChangePasswordScheme,
+    service: Annotated[UserService, Depends()],
+):
+    return await service.change_password(password_data, user.get("email"))
 
 
 @user_router.post("/forgot-password", tags=["Password"])

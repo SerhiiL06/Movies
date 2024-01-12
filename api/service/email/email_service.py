@@ -11,7 +11,7 @@ class EmailService:
 
     async def send_email_verification(self, email: str):
         token = self.jwt.create_jwt(email)
-        link = f"http://127.0.0.1:8000/email-verification/{token}"
+        link = f"http://127.0.0.1:8000/users/email-verification/{token}"
         body = f"""<p>Hello sir! Click here for verify your email {link}</p>"""
 
         message = MessageSchema(
