@@ -8,8 +8,3 @@ app = FastAPI()
 
 app.include_router(user_router)
 app.include_router(admin_router)
-
-
-@app.get("/")
-async def main_paig():
-    return {"hello": "world"}

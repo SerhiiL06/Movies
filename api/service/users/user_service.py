@@ -64,12 +64,24 @@ class UserService:
 
             return {"code": "200", "message": "success verify"}
 
-    async def get_me(self, email, session=async_session()):
+    async def get_me(self, user_id, session=async_session()):
         async with session as sess:
-            res = await sess.execute(select(User).where(User.email == email))
-            user_instance = res.scalar()
+            return await sess.get(User, user_id)
 
-            return {"email": user_instance.email, "role": user_instance.role}
+    async def take_token(self, email):
+        instance = await self.get_me(email)
+        return await self.jwt.create_access_token(instance)
+
+    async def update_profile(self, data, email):
+        instance = await self.get_me(email)
+
+        for field, value in data.items():
+            setattr(instance, field, value)
+
+        return instance
+
+    async def delete_user(self, user_id):
+        pass
 
     async def check_user(self, email, password, session=async_session()):
         async with session as sess:

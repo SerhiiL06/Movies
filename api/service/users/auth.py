@@ -14,20 +14,13 @@ class AuthService:
         self.jwt = JWTServive()
         self.user = UserService()
 
-    def generate_auth_token(self, email, password) -> str:
-        # await self.user.check_user(email, password)
-        return self.jwt.auth(email)
+    def authenticate(self, token: str = Depends(bearer)):
+        if token is None:
+            raise JWTError()
 
-
-def authenticate(token: str = Depends(bearer)):
-    print(token)
-    # if token is None:
-    #     raise JWTError()
-    jwt = JWTServive()
-
-    return jwt.decode_jwt(token)
+        return self.jwt.decode_jwt(token)
 
 
 auth = AuthService()
 
-current_user = Annotated[dict, Depends(authenticate)]
+current_user = Annotated[dict, Depends(auth.authenticate)]

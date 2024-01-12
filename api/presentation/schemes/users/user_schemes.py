@@ -1,5 +1,6 @@
-from typing import Any
-
+from typing import Any, Optional
+from datetime import date
+from dataclasses import dataclass
 from pydantic import BaseModel, ConfigDict, field_validator, EmailStr
 
 
@@ -20,6 +21,17 @@ class UserCreate(BaseModel):
     @classmethod
     def validate_email(cls, value):
         if len(value) < 5:
-            raise ValueError(f"{value} is to short")
+            raise ValueError(f"{value} is too short")
 
         return value
+
+
+class UpdateUser(BaseModel):
+    username: str
+    birthday: Optional[date] = None
+    photo: Optional[str] = None
+
+
+class UserProfile(UpdateUser):
+    model_config = ConfigDict(from_attributes=True)
+    email: str
