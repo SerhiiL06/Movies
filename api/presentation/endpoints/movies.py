@@ -21,8 +21,11 @@ async def get_movies(
     user: current_user,
     service: Annotated[UserActionsService, Depends()],
     title: str = None,
+    viewed: bool = None,
+    category: str = None,
 ):
-    return await service.get_my_movies(user.get("user_id"), title)
+    data = {"title": title, "viewed": viewed, "category": category}
+    return await service.get_my_movies(user.get("user_id"), filter_data=data)
 
 
 @movie_router.post("")

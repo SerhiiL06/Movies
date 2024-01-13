@@ -2,7 +2,7 @@ from .crud_service import CRUDService
 from infrastructure.main import async_session
 from infrastructure.db.models.movie import Movie, Category
 
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, text
 from sqlalchemy.orm import lazyload, joinedload
 from uuid import uuid4
 from fastapi import HTTPException, status
@@ -15,10 +15,10 @@ class UserActionsService:
         self.crud = CRUDService()
         self.session = async_session
 
-    async def add_favorite_movie(self, data, owner):
+    async def add_favorite_movie(self, data, owner, wishlist=False):
         async with self.session() as sess:
             query = insert(self.INSTANCE).values(
-                id=uuid4(), **data.model_dump(), owner_id=owner
+                id=uuid4(), **data.model_dump(), owner_id=owner, viewed=wishlist
             )
 
             result = await sess.execute(query)
@@ -30,17 +30,35 @@ class UserActionsService:
             await sess.commit()
             return {"code": "200", "message": "movie was added"}
 
-    async def get_my_movies(self, owner, filter_data=None):
+    async def get_my_movies(self, owner, filter_data):
+        filter_data = (
+            {
+                "title": filter_data.get("title", None),
+                "viewed": filter_data.get("viewed", None),
+                "category": filter_data.get("category", None),
+            }
+            if filter_data
+            else None
+        )
         async with self.session() as sess:
             query = (
                 select(self.INSTANCE)
                 .where(self.INSTANCE.owner_id == owner)
-                .filter(
-                    (self.INSTANCE.title).contains(filter_data if filter_data else "")
-                )
                 .options(joinedload(self.INSTANCE.category))
             )
 
+            if filter_data.get("title") is not None:
+                query = query.filter(
+                    (self.INSTANCE.title).icontains(filter_data.get("title")),
+                )
+
+            if filter_data.get("viewed") is not None:
+                query = query.filter(self.INSTANCE.viewed == filter_data.get("viewed"))
+
+            # if filter_data.get("category") is not None:
+            #     query = query.filter(
+            #         self.INSTANCE.category.has(text(filter_data.get("category")))
+            #     )
             result = await sess.execute(query)
 
             return result.scalars().all()

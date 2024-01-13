@@ -1,0 +1,5 @@
+[tool.pytest.ini_options]
+pythonpath = [
+  ".", "presentation",
+]
+asyncio_mode="auto"
