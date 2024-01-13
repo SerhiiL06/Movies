@@ -21,7 +21,7 @@ class Movie(Base):
     id: Mapped[idpk]
     title: Mapped[str] = mapped_column(String(100))
     description: Mapped[str] = mapped_column(String(250))
-    raiting: Mapped[int]
+    rating: Mapped[int] = mapped_column(nullable=True)
 
     created_at: Mapped[create]
     category_id: Mapped[UUID] = mapped_column(
