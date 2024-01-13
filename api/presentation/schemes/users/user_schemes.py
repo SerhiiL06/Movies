@@ -13,13 +13,11 @@ class UserCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     email: EmailStr
-    username: str
     password1: pws_validator
     password2: pws_validator
 
 
 class UpdateUser(BaseModel):
-    username: str
     birthday: Optional[date] = None
     photo: Optional[str] = None
 

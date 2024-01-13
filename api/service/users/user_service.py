@@ -20,9 +20,7 @@ class UserService:
         self.email = EmailService()
         self.jwt = JWTServive()
 
-    async def register_user(
-        self, username, email, password1, password2, session=async_session()
-    ):
+    async def register_user(self, email, password1, password2, session=async_session()):
         try:
             self.password.compare_password(password1, password2)
 
@@ -32,7 +30,6 @@ class UserService:
 
             user = User(
                 id=uuidpk,
-                username=username,
                 email=email,
                 hashed_password=hash_password,
                 role="default",

@@ -7,8 +7,10 @@ from pydantic import EmailStr
 from service.users.auth import current_user
 from service.users.user_service import UserService
 
-from ..schemes.users.password_schemes import (ChangePasswordScheme,
-                                              ChangePasswordWithCode)
+from ..schemes.users.password_schemes import (
+    ChangePasswordScheme,
+    ChangePasswordWithCode,
+)
 from ..schemes.users.user_schemes import UpdateUser, UserCreate, UserProfile
 
 user_router = APIRouter(prefix="/users")
@@ -17,7 +19,6 @@ user_router = APIRouter(prefix="/users")
 @user_router.post("/register", tags=["Auth"])
 async def register(user_data: UserCreate, service: UserService = Depends()):
     res = await service.register_user(
-        username=user_data.username,
         email=user_data.email,
         password1=user_data.password1,
         password2=user_data.password2,
