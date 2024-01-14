@@ -5,6 +5,7 @@ from infrastructure.db.models.movie import Movie
 from presentation.schemes.movie.movie_schemes import (
     ReadMovieScheme,
     CreateUpdateMovieScheme,
+    FilterScheme,
 )
 from fastapi import Depends, APIRouter
 from typing import Annotated, List
@@ -12,6 +13,7 @@ from fastapi_filter import FilterDepends
 from presentation.schemes.filters import MovieFilter
 from typing import Optional
 from uuid import UUID
+
 
 movie_router = APIRouter(prefix="/movies", tags=["Movies"])
 
@@ -24,8 +26,10 @@ async def get_movies(
     viewed: bool = None,
     category: str = None,
 ):
-    data = {"title": title, "viewed": viewed, "category": category}
-    return await service.get_my_movies(user.get("user_id"), filter_data=data)
+    result = FilterScheme(title=title, viewed=viewed, category=category).model_dump(
+        exclude_none=True
+    )
+    return await service.get_my_movies(user.get("user_id"), filter_data=result)
 
 
 @movie_router.post("")

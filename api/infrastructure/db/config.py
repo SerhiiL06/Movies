@@ -2,7 +2,6 @@ import os
 
 from dotenv import load_dotenv
 from fastapi_mail import ConnectionConfig
-from pydantic_settings import BaseSettings, SettingsConfigDict
 
 load_dotenv()
 

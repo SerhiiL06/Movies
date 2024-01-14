@@ -2,7 +2,7 @@ from .crud_service import CRUDService
 from infrastructure.main import async_session
 from infrastructure.db.models.movie import Movie, Category
 
-from sqlalchemy import insert, select, text
+from sqlalchemy import insert, select
 from sqlalchemy.orm import lazyload, joinedload
 from uuid import uuid4
 from fastapi import HTTPException, status
@@ -31,15 +31,7 @@ class UserActionsService:
             return {"code": "200", "message": "movie was added"}
 
     async def get_my_movies(self, owner, filter_data):
-        filter_data = (
-            {
-                "title": filter_data.get("title", None),
-                "viewed": filter_data.get("viewed", None),
-                "category": filter_data.get("category", None),
-            }
-            if filter_data
-            else None
-        )
+        keys = filter_data.keys()
         async with self.session() as sess:
             query = (
                 select(self.INSTANCE)
@@ -47,18 +39,20 @@ class UserActionsService:
                 .options(joinedload(self.INSTANCE.category))
             )
 
-            if filter_data.get("title") is not None:
+            if "title" in keys:
                 query = query.filter(
                     (self.INSTANCE.title).icontains(filter_data.get("title")),
                 )
 
-            if filter_data.get("viewed") is not None:
+            if "viewed" in keys:
                 query = query.filter(self.INSTANCE.viewed == filter_data.get("viewed"))
 
-            # if filter_data.get("category") is not None:
-            #     query = query.filter(
-            #         self.INSTANCE.category.has(text(filter_data.get("category")))
-            #     )
+            if "category" in keys:
+                query = query.filter(
+                    self.INSTANCE.category.has(
+                        Category.title.icontains(filter_data.get("category"))
+                    )
+                )
             result = await sess.execute(query)
 
             return result.scalars().all()

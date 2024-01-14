@@ -24,3 +24,10 @@ class ReadMovieScheme(BaseModel):
     # created_at: date = Field(serialization_alias="created")
 
     category: CreateUpdateCategoryScheme
+
+
+class FilterScheme(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    title: str | None
+    viewed: bool | None
+    category: str | None

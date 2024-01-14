@@ -20,7 +20,9 @@ class UserService:
         self.email = EmailService()
         self.jwt = JWTServive()
 
-    async def register_user(self, email, password1, password2, session=async_session()):
+    async def register_user(
+        self, email, password1, password2, superuser=False, session=async_session()
+    ) -> dict:
         try:
             self.password.compare_password(password1, password2)
 
@@ -32,13 +34,15 @@ class UserService:
                 id=uuidpk,
                 email=email,
                 hashed_password=hash_password,
-                role="default",
+                role="admin" if superuser else "admin",
+                is_active=True if superuser else False,
             )
 
             session.add(user)
 
             await session.commit()
-            await self.email.send_email_verification(email)
+            if not superuser:
+                await self.email.send_email_verification(email)
             return {"code": "200", "message": str(uuidpk)}
         except IntegrityError:
             session.rollback()

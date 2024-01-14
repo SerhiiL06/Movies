@@ -1,5 +1,3 @@
-import logging
-
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
 from .db.config import settings

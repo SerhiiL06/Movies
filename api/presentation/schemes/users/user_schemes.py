@@ -1,7 +1,7 @@
-from datetime import date
+from datetime import datetime, date
 from typing import Annotated, Any, Optional
 
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, UUID4
 from pydantic.functional_validators import AfterValidator
 
 from .password_schemes import validate_password
@@ -18,6 +18,16 @@ class UserCreate(BaseModel):
 
 
 class UpdateUser(BaseModel):
+    birthday: Optional[date] = None
+    photo: Optional[str] = None
+
+
+class AdminUserScheme(BaseModel):
+    id: UUID4
+    email: str
+    is_active: bool
+    created: datetime
+    role: str
     birthday: Optional[date] = None
     photo: Optional[str] = None
 
