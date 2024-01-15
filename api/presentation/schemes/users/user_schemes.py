@@ -1,9 +1,10 @@
-from datetime import datetime, date
+from datetime import date, datetime
 from typing import Annotated, Any, Optional
 
-from pydantic import BaseModel, ConfigDict, EmailStr, UUID4
+from pydantic import UUID4, BaseModel, ConfigDict, EmailStr
 from pydantic.functional_validators import AfterValidator
 
+from ..movie.movie_schemes import ReadMovieScheme
 from .password_schemes import validate_password
 
 pws_validator = Annotated[str, AfterValidator(validate_password)]
@@ -30,6 +31,7 @@ class AdminUserScheme(BaseModel):
     role: str
     birthday: Optional[date] = None
     photo: Optional[str] = None
+    movies: list[ReadMovieScheme] = None
 
 
 class UserProfile(UpdateUser):

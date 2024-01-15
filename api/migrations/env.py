@@ -5,8 +5,8 @@ from sqlalchemy import engine_from_config, pool
 
 from infrastructure.db.config import settings
 from infrastructure.db.models.base import Base
-from infrastructure.db.models.user import User
 from infrastructure.db.models.movie import Category, Movie
+from infrastructure.db.models.user import User
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

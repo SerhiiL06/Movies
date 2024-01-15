@@ -1,18 +1,18 @@
 from datetime import datetime
-from uuid import UUID
 from typing import List
-from .movie import Movie
+from uuid import UUID, uuid4
 
 from sqlalchemy import func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
+from .movie import Movie
 
 
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[UUID] = mapped_column(unique=True, primary_key=True)
+    id: Mapped[UUID] = mapped_column(unique=True, primary_key=True, default=uuid4())
     email: Mapped[str] = mapped_column(unique=True)
     role: Mapped[str]
 

@@ -1,9 +1,10 @@
-from fastapi.testclient import TestClient
-from main.web import app
-import pytest
 import asyncio
+
+import pytest
+from fastapi.testclient import TestClient
 from httpx import AsyncClient
 
+from main.web import app
 
 client = TestClient(app=app)
 

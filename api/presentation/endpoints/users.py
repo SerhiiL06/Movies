@@ -7,10 +7,8 @@ from pydantic import EmailStr
 from service.users.auth import current_user
 from service.users.user_service import UserService
 
-from ..schemes.users.password_schemes import (
-    ChangePasswordScheme,
-    ChangePasswordWithCode,
-)
+from ..schemes.users.password_schemes import (ChangePasswordScheme,
+                                              ChangePasswordWithCode)
 from ..schemes.users.user_schemes import UpdateUser, UserCreate, UserProfile
 
 user_router = APIRouter(prefix="/users")

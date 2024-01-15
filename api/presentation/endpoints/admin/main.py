@@ -1,8 +1,10 @@
-from fastapi import APIRouter
 from typing import List
 
-from .users import get_user_list, create_superuser, get_user_movies
+from fastapi import APIRouter
+
 from presentation.schemes.users.user_schemes import AdminUserScheme
+
+from .users import create_superuser, delete_user, get_user_list
 
 admin_router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -16,4 +18,4 @@ admin_router.add_api_route(
     response_model=List[AdminUserScheme],
     methods=["get"],
 )
-admin_router.add_api_route(path="/users/{user_id}/movies", endpoint=get_user_movies)
+admin_router.add_api_route(path="/users/{user_id}/delete", endpoint=delete_user)

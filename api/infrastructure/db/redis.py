@@ -12,3 +12,7 @@ class RedisTools:
 
     async def del_value(self, key):
         await self.__CONNECT_POINT.delete(key)
+
+    @property
+    def redis_config(self):
+        return self.__CONNECT_POINT

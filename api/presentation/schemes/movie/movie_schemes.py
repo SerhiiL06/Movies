@@ -1,18 +1,20 @@
-from pydantic import BaseModel, ConfigDict, Field, UUID4
-from typing import Optional, Any
 from datetime import date
+from typing import Any, Optional
+
+from pydantic import UUID4, BaseModel, ConfigDict, Field
+
 from ..category.category_scheme import CreateUpdateCategoryScheme
 
 
 class CreateUpdateMovieScheme(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    title: str = Field(min_length=3, max_length=100)
+    title: Optional[str] = Field(None, min_length=3, max_length=100)
     description: Optional[str] = Field(None, max_length=250)
 
-    rating: int = Field(gt=0, lte=5)
+    rating: Optional[int] = Field(None, gt=0, lte=5)
 
-    category_id: UUID4
+    category_id: Optional[UUID4] = None
 
 
 class ReadMovieScheme(BaseModel):
@@ -23,11 +25,12 @@ class ReadMovieScheme(BaseModel):
     rating: Optional[int] = None
     # created_at: date = Field(serialization_alias="created")
 
-    category: CreateUpdateCategoryScheme
+    # category: CreateUpdateCategoryScheme
 
 
 class FilterScheme(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     title: str | None
     viewed: bool | None
+    owner_id: UUID4
     category: str | None

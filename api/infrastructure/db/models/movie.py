@@ -1,7 +1,9 @@
-from .base import Base, idpk, create
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, ForeignKey, UUID
 from typing import List
+
+from sqlalchemy import UUID, ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from .base import Base, create, idpk
 
 
 class Category(Base):
@@ -35,3 +37,6 @@ class Movie(Base):
     category: Mapped["Category"] = relationship(back_populates="movies")
 
     owner: Mapped["User"] = relationship(back_populates="movies")
+
+    def __repr__(self) -> str:
+        return self.title
