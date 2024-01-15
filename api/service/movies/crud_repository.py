@@ -1,12 +1,12 @@
 from uuid import uuid4
 
 from sqlalchemy import delete, insert, select, update
+from service.repository import AbstractRepository
 
-from infrastructure.db.models.movie import Category
 from infrastructure.main import async_session
 
 
-class CRUDRepository:
+class CRUDRepository(AbstractRepository):
     def __init__(self):
         self.session = async_session
 

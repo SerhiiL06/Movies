@@ -3,9 +3,11 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from presentation.schemes.movie.movie_schemes import (CreateUpdateMovieScheme,
-                                                      FilterScheme,
-                                                      ReadMovieScheme)
+from presentation.schemes.movie.movie_schemes import (
+    CreateUpdateMovieScheme,
+    FilterScheme,
+    ReadMovieScheme,
+)
 from service.movies.movie_action import MovieActionsService
 from service.users.auth import current_user
 

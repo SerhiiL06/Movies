@@ -6,8 +6,10 @@ from fastapi import APIRouter, Depends
 from infrastructure.db.models.movie import Category
 from service.movies.category_action import CategoryActionService
 
-from ..schemes.category.category_scheme import (CreateUpdateCategoryScheme,
-                                                ReadCategoryScheme)
+from ..schemes.category.category_scheme import (
+    CreateUpdateCategoryScheme,
+    ReadCategoryScheme,
+)
 
 category_router = APIRouter(prefix="/category", tags=["category"])
 

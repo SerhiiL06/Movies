@@ -1,7 +1,7 @@
 from fastapi import Depends
 
-from infrastructure.db.models.movie import Category, Movie
-from infrastructure.main import async_session
+from infrastructure.db.models.movie import Category
+
 
 from .crud_repository import CRUDRepository
 

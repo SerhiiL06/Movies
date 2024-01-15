@@ -1,11 +1,7 @@
-from uuid import uuid4
+from fastapi import Depends
 
-from fastapi import Depends, HTTPException, status
-from sqlalchemy import insert, select
-from sqlalchemy.orm import joinedload
+from infrastructure.db.models.movie import Movie
 
-from infrastructure.db.models.movie import Category, Movie
-from infrastructure.main import async_session
 
 from .crud_repository import CRUDRepository
 
