@@ -7,7 +7,7 @@ from ..category.category_scheme import CreateUpdateCategoryScheme
 
 
 class CreateUpdateMovieScheme(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, str_to_lower=True)
 
     title: Optional[str] = Field(None, min_length=3, max_length=100)
     description: Optional[str] = Field(None, max_length=250)
@@ -23,9 +23,6 @@ class ReadMovieScheme(BaseModel):
     description: str
 
     rating: Optional[int] = None
-    # created_at: date = Field(serialization_alias="created")
-
-    # category: CreateUpdateCategoryScheme
 
 
 class FilterScheme(BaseModel):

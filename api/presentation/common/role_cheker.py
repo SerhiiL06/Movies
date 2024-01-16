@@ -1,6 +1,6 @@
 from functools import wraps
 
-from fastapi import HTTPException, status
+from service.exceptions import PermissionDenied
 
 
 def check_role(allowed_roles):
@@ -9,9 +9,7 @@ def check_role(allowed_roles):
         async def wrapper(*args, **kwargs):
             user = kwargs.get("user")
             if user.get("role") not in allowed_roles:
-                raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN, detail="Permission denied"
-                )
+                raise PermissionDenied()
             return await func(*args, **kwargs)
 
         return wrapper

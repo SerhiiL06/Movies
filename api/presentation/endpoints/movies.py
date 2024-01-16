@@ -16,7 +16,16 @@ from ..schemes.movie.movie_schemes import CreateUpdateMovieScheme
 movie_router = APIRouter(prefix="/movie", tags=["Movies"])
 
 
-@movie_router.get("", response_model=List[ReadMovieScheme])
+@movie_router.get(
+    "",
+    summary="get list of user movies",
+    description="""parameters for search: 
+                    title - the title for movie;
+                    viewed - filter by viewed movies (bool);
+                    category: filter by category;
+                """,
+    response_model=list[ReadMovieScheme],
+)
 async def get_movies(
     user: current_user,
     service: Annotated[MovieActionsService, Depends()],
@@ -24,10 +33,11 @@ async def get_movies(
     viewed: bool = None,
     category: str = None,
 ):
-    result = FilterScheme(
-        title=title, owner_id=user.get("user_id"), viewed=viewed, category=category
-    ).model_dump(exclude_none=True)
-    return await service.get_my_movies(result)
+    return await service.get_my_movies(
+        FilterScheme(
+            title=title, owner_id=user.get("user_id"), viewed=viewed, category=category
+        )
+    )
 
 
 @movie_router.post("/create")
@@ -36,9 +46,7 @@ async def create_movie(
     data: CreateUpdateMovieScheme,
     service: Annotated[MovieActionsService, Depends()],
 ):
-    result = await service.add_favorite_movie(
-        data.model_dump(), owner=user.get("user_id")
-    )
+    result = await service.add_favorite_movie(data, owner=user.get("user_id"))
 
     return result
 
@@ -50,7 +58,7 @@ async def update_movies(
     data: CreateUpdateMovieScheme,
     service: Annotated[MovieActionsService, Depends()],
 ):
-    return await service.update_movie(data, movie_id)
+    return await service.update_movie(data, user.get("user_id"), movie_id)
 
 
 @movie_router.delete("/delete/{movie_id}")

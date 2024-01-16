@@ -1,11 +1,7 @@
-from datetime import date, datetime
+from datetime import date
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
-
-
-class CategoryScheme(BaseModel):
-    title: str
 
 
 class CreateUpdateCategoryScheme(BaseModel):

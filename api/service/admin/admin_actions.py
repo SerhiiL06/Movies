@@ -1,11 +1,11 @@
+from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
 from infrastructure.db.models.user import User
+from presentation.schemes.users.user_schemes import UserFilterSchema
 from service.repository import CRUDRepository
 from service.users.password import PasswordService
-from fastapi import Depends
-from presentation.schemes.users.user_schemes import UserFilterSchema
 
 
 class AdminActionService:

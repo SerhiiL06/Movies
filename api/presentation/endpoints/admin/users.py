@@ -1,18 +1,11 @@
-from typing import Annotated
+from typing import Annotated, List
 
-from fastapi import Depends, Query
+from fastapi import APIRouter, Depends, Query
 
 from presentation.common.role_cheker import check_role
-from presentation.schemes.users.user_schemes import UserCreate
+from presentation.schemes.users.user_schemes import AdminUserScheme, UserCreate
 from service.admin.admin_actions import AdminActionService
 from service.users.auth import current_user
-
-from typing import List
-
-from fastapi import APIRouter
-
-from presentation.schemes.users.user_schemes import AdminUserScheme
-
 
 admin_router = APIRouter(prefix="/admin-route", tags=["admin"])
 

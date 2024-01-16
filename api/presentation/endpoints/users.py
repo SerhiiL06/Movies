@@ -7,10 +7,8 @@ from pydantic import EmailStr
 from service.users.auth import current_user
 from service.users.user_service import UserService
 
-from ..schemes.users.password_schemes import (
-    ChangePasswordScheme,
-    ChangePasswordWithCode,
-)
+from ..schemes.users.password_schemes import (ChangePasswordScheme,
+                                              ChangePasswordWithCode)
 from ..schemes.users.user_schemes import UpdateUser, UserCreate, UserProfile
 
 user_router = APIRouter(prefix="/users")
@@ -31,8 +29,7 @@ async def take_token(
     data: Annotated[OAuth2PasswordRequestForm, Depends()],
     user_service: Annotated[UserService, Depends()],
 ):
-    await user_service.check_user(email=data.username, password=data.password)
-    return await user_service.take_token(data.username)
+    return await user_service.take_token(data.username, data.password)
 
 
 @user_router.get(
