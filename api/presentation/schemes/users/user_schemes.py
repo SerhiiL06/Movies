@@ -37,3 +37,9 @@ class AdminUserScheme(BaseModel):
 class UserProfile(UpdateUser):
     model_config = ConfigDict(from_attributes=True)
     email: str
+
+
+class UserFilterSchema(BaseModel):
+    email: Optional[str] = None
+    role: Optional[str] = None
+    is_active: Optional[bool] = None

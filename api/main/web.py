@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from sqladmin import Admin
 
 from infrastructure.main import async_engine
-from presentation.endpoints.admin.main import admin_router
+from presentation.endpoints.admin.users import admin_router
 from presentation.endpoints.categories import category_router
 from presentation.endpoints.movies import movie_router
 from presentation.endpoints.users import user_router

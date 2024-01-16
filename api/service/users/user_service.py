@@ -4,9 +4,9 @@ from uuid import uuid4
 from fastapi import HTTPException
 from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
-
 from infrastructure.db.models.user import User
-from infrastructure.main import async_session
+from fastapi import Depends
+from service.repository import CRUDRepository
 from service.email.email_service import EmailService
 from service.token.jwt_service import JWTServive
 
@@ -14,39 +14,28 @@ from .password import PasswordService
 
 
 class UserService:
-    def __init__(self):
+    INSTANCE = User
+
+    def __init__(self, crud: CRUDRepository = Depends()):
         self.password = PasswordService()
         self.email = EmailService()
-        self.session = async_session
+        self.crud = crud
         self.jwt = JWTServive()
 
-    async def register_user(
-        self, email, password1, password2, superuser=False, session=async_session()
-    ) -> dict:
-        try:
-            self.password.compare_password(password1, password2)
+    async def register_user(self, data) -> dict:
+        self.password.compare_password(data.password1, data.password2)
 
-            hash_password = self.password.hashed_password(password1)
+        hashed_pw = self.password.hashed_password(data.password1)
 
-            uuidpk = uuid4()
+        user_data = data.model_dump(exclude=["password1", "password2"])
+        user_data.update({"hashed_password": hashed_pw, "role": "default"})
 
-            user = User(
-                id=uuidpk,
-                email=email,
-                hashed_password=hash_password,
-                role="admin" if superuser else "admin",
-                is_active=True if superuser else False,
-            )
+        result = await self.crud.create_model(self.INSTANCE, user_data)
 
-            session.add(user)
+        if result is True:
+            await self.email.send_email_verification(data.email)
 
-            await session.commit()
-            if not superuser:
-                await self.email.send_email_verification(email)
-            return {"code": "200", "message": str(uuidpk)}
-        except IntegrityError:
-            session.rollback()
-            return {"message": "user already exists"}
+        return {"message": "OK"}
 
     async def check_email(self, token):
         data = self.jwt.decode_jwt(token)

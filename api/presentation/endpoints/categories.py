@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 
 from infrastructure.db.models.movie import Category
-from service.movies.category_action import CategoryActionService
+from service.movies.category_service import CategoryActionService
 
 from ..schemes.category.category_scheme import (
     CreateUpdateCategoryScheme,

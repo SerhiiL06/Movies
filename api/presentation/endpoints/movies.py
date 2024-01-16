@@ -8,7 +8,7 @@ from presentation.schemes.movie.movie_schemes import (
     FilterScheme,
     ReadMovieScheme,
 )
-from service.movies.movie_action import MovieActionsService
+from service.movies.movie_service import MovieActionsService
 from service.users.auth import current_user
 
 from ..schemes.movie.movie_schemes import CreateUpdateMovieScheme

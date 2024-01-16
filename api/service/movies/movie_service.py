@@ -3,7 +3,7 @@ from fastapi import Depends
 from infrastructure.db.models.movie import Movie
 
 
-from .crud_repository import CRUDRepository
+from service.repository import CRUDRepository
 
 
 class MovieActionsService:
