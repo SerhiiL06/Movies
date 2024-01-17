@@ -34,9 +34,15 @@ async def get_user_list(
     search: str = None,
     detail: bool = False,
 ):
-    return await service.get_user_list(
-        role=role, active=is_active, email=search, detail=detail
-    )
+    return await service.get_user_list(role=role, active=is_active, email=search)
+
+
+@admin_router.patch("/users/{user_id}/block")
+@check_role(["admin"])
+async def block_user(
+    user: current_user, user_id: str, service: Annotated[AdminActionService, Depends()]
+):
+    return await service.block_user(user_id, initiator=user.get("user_id"))
 
 
 @admin_router.delete("/users/{user_id}/delete")
@@ -44,4 +50,4 @@ async def get_user_list(
 async def delete_user(
     user: current_user, user_id: str, service: Annotated[AdminActionService, Depends()]
 ):
-    return await service.delete_user(user_id)
+    return await service.delete_user(user_id, initiator=user.get("user_id"))

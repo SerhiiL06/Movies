@@ -8,8 +8,12 @@ from presentation.endpoints.admin.users import admin_router
 from presentation.endpoints.categories import category_router
 from presentation.endpoints.movies import movie_router
 from presentation.endpoints.users import user_router
-from service.exceptions import (ObjectDoesntExists, PermissionDenied,
-                                SomethingWentWrong)
+from service.exceptions import (
+    ObjectDoesntExists,
+    PermissionDenied,
+    SomethingWentWrong,
+    UserAlreadyExists,
+)
 
 from .sqladmin import MovieAdmin, UserAdmin
 
@@ -36,7 +40,7 @@ app.include_router(movie_router)
 
 
 @app.exception_handler(ObjectDoesntExists)
-async def object_doesnt_exists_handler(request: Request, exc: ObjectDoesntExists):
+def object_doesnt_exists_handler(request: Request, exc: ObjectDoesntExists):
     return JSONResponse(
         content={"code": "404", "msg": f"{exc.model.__name__} error"},
         status_code=status.HTTP_404_NOT_FOUND,
@@ -44,7 +48,7 @@ async def object_doesnt_exists_handler(request: Request, exc: ObjectDoesntExists
 
 
 @app.exception_handler(SomethingWentWrong)
-async def something_wrong_handler(request: Request, exc: SomethingWentWrong):
+def something_wrong_handler(request: Request, exc: SomethingWentWrong):
     return JSONResponse(
         content={"detail": {"code": "400", "msg": "something went wrong"}},
         status_code=status.HTTP_400_BAD_REQUEST,
@@ -52,5 +56,17 @@ async def something_wrong_handler(request: Request, exc: SomethingWentWrong):
 
 
 @app.exception_handler(PermissionDenied)
-async def permission_handler(request: Request, exc: PermissionDenied):
+def permission_handler(request: Request, exc: PermissionDenied):
     return JSONResponse(content={"detail": {"code": "403", "msg": "Permission denied"}})
+
+
+@app.exception_handler(UserAlreadyExists)
+def user_exists(request: Request, exc: UserAlreadyExists):
+    return JSONResponse(
+        content={
+            "detail": {
+                "code": "400",
+                "msg": f"User with email {exc.email} already exists",
+            }
+        }
+    )

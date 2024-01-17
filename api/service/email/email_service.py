@@ -1,7 +1,7 @@
 from random import randint
 
 from fastapi_mail import FastMail, MessageSchema
-
+from fastapi.background import BackgroundTasks
 from infrastructure.db.config import email_settings
 from service.token.jwt_service import JWTServive
 

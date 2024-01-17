@@ -6,10 +6,18 @@ from pydantic import EmailStr
 
 from service.users.auth import current_user
 from service.users.user_service import UserService
+from service.users.password import PasswordService
 
-from ..schemes.users.password_schemes import (ChangePasswordScheme,
-                                              ChangePasswordWithCode)
-from ..schemes.users.user_schemes import UpdateUser, UserCreate, UserProfile
+from ..schemes.users.password_schemes import (
+    ChangePasswordScheme,
+    ChangePasswordWithCode,
+)
+from ..schemes.users.user_schemes import (
+    UpdateUser,
+    UserCreate,
+    UserProfile,
+    FullUserProfileSchema,
+)
 
 user_router = APIRouter(prefix="/users")
 
@@ -34,17 +42,17 @@ async def take_token(
 
 @user_router.get(
     "/me",
-    tags=["Profile"],
     response_model=UserProfile,
+    tags=["Profile"],
 )
 async def get_profile(user: current_user, service: Annotated[UserService, Depends()]):
-    return await service.get_me(user.get("email"))
+    return await service.get_me(user.get("user_id"))
 
 
 @user_router.put(
     "/me",
     tags=["Profile"],
-    response_model=UserProfile,
+    # response_model=UserProfile,
     response_model_exclude_none=True,
 )
 async def update_profile(
@@ -52,9 +60,7 @@ async def update_profile(
     update_data: UpdateUser,
     service: Annotated[UserService, Depends()],
 ):
-    return await service.update_profile(
-        data=update_data.model_dump(), email=user.get("email")
-    )
+    return await service.update_profile(update_data, user.get("user_id"))
 
 
 @user_router.delete("/delete-profile", tags=["Profile"])

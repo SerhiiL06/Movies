@@ -34,9 +34,15 @@ class AdminUserScheme(BaseModel):
     movies: list[ReadMovieScheme] = None
 
 
-class UserProfile(UpdateUser):
+class UserProfile(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     email: str
+    birthday: Optional[date] = None
+    photo: Optional[str] = None
+
+
+class FullUserProfileSchema(UserProfile):
+    movies: list[ReadMovieScheme]
 
 
 class UserFilterSchema(BaseModel):

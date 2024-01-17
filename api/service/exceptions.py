@@ -6,6 +6,11 @@ class ObjectDoesntExists(Exception):
         self.model = model
 
 
+class UserAlreadyExists(Exception):
+    def __init__(self, email) -> None:
+        self.email = email
+
+
 class SomethingWentWrong(Exception):
     pass
 

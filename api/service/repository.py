@@ -1,13 +1,13 @@
 from abc import ABC
 from uuid import uuid4
 
-from service.exceptions import ObjectDoesntExists
+from service.exceptions import ObjectDoesntExists, UserAlreadyExists, SomethingWentWrong
 from sqlalchemy import delete, insert, select, update
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import joinedload
 from uuid import UUID
 from infrastructure.db.models.base import Base
 from infrastructure.main import async_session
-from service.exceptions import SomethingWentWrong
 
 
 class AbstractRepository(ABC):
@@ -41,19 +41,24 @@ class CRUDRepository(AbstractRepository):
                 await sess.commit()
 
             except IntegrityError:
-                raise SomethingWentWrong()
+                raise UserAlreadyExists(data.get("email"))
 
         return res.scalar_one()
 
     async def read_model(self, model: Base, filter_data: dict):
         async with self.session() as sess:
-            query = select(model).filter_by(**filter_data)
+            query = (
+                select(model)
+                .filter_by(**filter_data)
+                .options(joinedload(model.movies))
+                .order_by(model.created)
+            )
 
             result = await sess.execute(query)
 
-            return result.scalars().all()
+            return result.unique().scalars().all()
 
-    async def update_model(self, model: Base, data, object_id: UUID):
+    async def update_model(self, model: Base, data, object_id: UUID) -> UUID:
         async with self.session() as sess:
             try:
                 query = (
@@ -70,7 +75,7 @@ class CRUDRepository(AbstractRepository):
             except IntegrityError:
                 raise SomethingWentWrong()
 
-            return result.scalar_one()
+            return result.scalars().all()
 
     async def delete_model(self, model, object_id):
         async with self.session() as sess:
